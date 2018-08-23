@@ -1,7 +1,26 @@
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
+import {
+  ItalicButton,
+  BoldButton,
+  UnderlineButton,
+  CodeButton,
+} from 'draft-js-buttons';
+import PropTypes from 'prop-types';
 
-export default class Toolbar extends React.Component {
+class Toolbar extends React.Component {
+
+  static defaultProps = {
+    children: (externalProps) => (
+      // may be use React.Fragment instead of div to improve perfomance after React 16
+      <div>
+        <ItalicButton {...externalProps} />
+        <BoldButton {...externalProps} />
+        <UnderlineButton {...externalProps} />
+        <CodeButton {...externalProps} />
+      </div>
+    )
+  }
 
   state = {
     /**
@@ -29,7 +48,7 @@ export default class Toolbar extends React.Component {
   onOverrideContent = (overrideContent) => this.setState({ overrideContent });
 
   render() {
-    const { theme, store, structure } = this.props;
+    const { theme, store } = this.props;
     const { overrideContent: OverrideContent } = this.state;
     const childrenProps = {
       theme: theme.buttonStyles,
@@ -44,9 +63,14 @@ export default class Toolbar extends React.Component {
       >
         {OverrideContent
           ? <OverrideContent {...childrenProps} />
-          : structure.map((Component, index) =>
-            <Component key={index} {...childrenProps} />)}
+          : this.props.children(childrenProps)}
       </div>
     );
   }
 }
+
+Toolbar.propTypes = {
+  children: PropTypes.func
+};
+
+export default Toolbar;
